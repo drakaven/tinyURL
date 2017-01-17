@@ -10,11 +10,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const generateRandomString = function(){
+const generateRandomString = function() {
   let randSource = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   let randString = "";
-  for (let i = 0; i <6; i++){
-    randString += randSource[(Math.round(Math.random() * randSource.length))];
+  for (let i = 0; i < 6; i++) {
+    randString += randSource[(Math.round(Math.random() * (randSource.length - 1))];
   }
   return randString
 }
@@ -27,13 +27,22 @@ app.use(bodyParser.urlencoded({
 
 
 //routes
+app.post("/urls/create", (req, res) => {
+  console.log(req.body); // debug statement to see POST parameters
+  let randString = generateRandomString();
+  urlDatabase[randString] = req.body.longURL;
+  console.log(urlDatabase);
+  res.redirect(301, 'http://localhost:8080/urls/' + randString); // Respond with 'Ok' (we will replace this)
+});
+
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  console.log(req.body); // debug statement to see POST parameters
+  res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/", (req, res) => {
