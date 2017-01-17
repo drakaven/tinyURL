@@ -14,7 +14,7 @@ const generateRandomString = function() {
   let randSource = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   let randString = "";
   for (let i = 0; i < 6; i++) {
-    randString += randSource[(Math.round(Math.random() * (randSource.length - 1))];
+    randString += randSource[(Math.round(Math.random() * (randSource.length - 1)))];
   }
   return randString
 }
@@ -27,14 +27,17 @@ app.use(bodyParser.urlencoded({
 
 
 //routes
+app.get("/u/:shortURL", (req, res) => {
+  res.redirect(urlDatabase[req.params.shortURL]);
+});
+
 app.post("/urls/create", (req, res) => {
   console.log(req.body); // debug statement to see POST parameters
   let randString = generateRandomString();
   urlDatabase[randString] = req.body.longURL;
   console.log(urlDatabase);
-  res.redirect(301, 'http://localhost:8080/urls/' + randString); // Respond with 'Ok' (we will replace this)
+  res.redirect(302, 'http://localhost:8080/urls/' + randString); // Respond with 'Ok' (we will replace this)
 });
-
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
