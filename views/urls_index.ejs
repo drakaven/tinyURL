@@ -8,9 +8,11 @@
     <!-- Add your EJS code here -->
 
     <% for (item in urls) { %>
+    <%= item %>
     <a href = <%= urls[item] %>><%= urls[item] %></a>
+    <a href = <%= `/urls/${item}` %> >Edit</a>
     <form method="POST" action=<%= `/urls/${item}/delete` %>><input type="submit" value="Delete"></input></form>
-     <%    } %>
+     <% } %>
 
 
 </body>
