@@ -26,7 +26,14 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-//routes
+//routes - these hava a priority order
+app.post("/urls/:shortURL/delete/", (req, res) => {
+  let key = req.url.replace("/urls/", "").replace("/delete", "");
+  delete urlDatabase[key];
+  res.redirect(302, 'http://localhost:8080/urls'); // Respond with 'Ok' (we will replace this)
+});
+
+
 app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]);
 });

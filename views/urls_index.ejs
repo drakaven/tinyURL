@@ -9,6 +9,9 @@
 
     <% for (item in urls) { %>
     <a href = <%= urls[item] %>><%= urls[item] %></a>
+    <form method="POST" action=<%= `/urls/${item}/delete` %>><input type="submit" value="Delete"></input></form>
      <%    } %>
+
+
 </body>
 </html>
