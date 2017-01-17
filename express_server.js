@@ -10,6 +10,15 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const generateRandomString = function(){
+  let randSource = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  let randString = "";
+  for (let i = 0; i <6; i++){
+    randString += randSource[(Math.round(Math.random() * randSource.length))];
+  }
+  return randString
+}
+
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({
