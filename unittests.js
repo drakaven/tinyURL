@@ -20,7 +20,25 @@ request("http://localhost:8080/urls/new", function(err, response, body) {
 
 request("http://localhost:8080/u/b2xVn2", function(err, response, body) {
   console.assert(response.statusCode === 200);
-  console.log("url/new test passed!");
+  console.log("u/redirect");
+});
+
+//login test
+const options = {
+  headers: {'content-type' : 'application/x-www-form-urlencoded'},
+  method: 'post',
+  body: 'username=loginTest',
+  url: "http://localhost:8080/login/"
+}
+
+request.post(options, function(err, response, body){
+    console.assert(response.headers['set-cookie'][0].substring(0, 18) === 'username=loginTest')
+    console.log("Login passed")
+}).on('end', function(){
+  request.post("http://localhost:8080/logout" , function(err, response, body) {
+    console.assert(response.headers['set-cookie'][0].substring(0, 9) === 'username=')
+    console.log("Logut passed")
+  });
 });
 
 // db tests
@@ -81,7 +99,5 @@ request("http://localhost:8080/urls.json", function(err, response, body) {
 });
 
 
-//not sure about these ones right now
-//Check for more
-//login test
-//logout test
+
+

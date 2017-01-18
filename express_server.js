@@ -30,13 +30,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 
-
-
-
-
 //routes - these have a priority order
 
 app.post("/logout", (req, res) => {
+  //this clears the cookie but does not delete it
   res.clearCookie('username');
   res.redirect(302, 'http://localhost:8080/urls/');
 });
@@ -44,10 +41,11 @@ app.post("/logout", (req, res) => {
 
 app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
+  console.log(req.body);
   res.redirect(302, 'http://localhost:8080/urls/');
 });
 
-app.post("/urls/create/", (req, res) => {
+app.post("/urls/create", (req, res) => {
   let randString = generateRandomString();
   urlDatabase[randString] = req.body.longURL;
   //console.log(urlDatabase);
@@ -56,20 +54,20 @@ app.post("/urls/create/", (req, res) => {
 
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.update;
+  //if statement resolves bug from posting data to this page with wrong url
+  if (urlDatabase[req.params.id]) urlDatabase[req.params.id] = req.body.update;
   res.redirect(302, 'http://localhost:8080/urls/' + req.params.id); // Respond with 'Ok' (we will replace this)
 });
 
 
-app.post("/urls/:shortURL/delete/", (req, res) => {
+app.post("/urls/:shortURL/delete", (req, res) => {
   let key = req.url.replace("/urls/", "").replace("/delete", "");
   delete urlDatabase[key];
   res.redirect(302, 'http://localhost:8080/urls'); // Respond with 'Ok' (we will replace this)
 });
 
-
 app.get("/u/:shortURL", (req, res) => {
-  res.redirect(urlDatabase[req.params.shortURL]);
+  res.redirect(302, urlDatabase[req.params.shortURL]);
 });
 
 app.get("/urls/new", (req, res) => {
