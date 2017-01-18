@@ -30,7 +30,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 
+//pages should redirect back to the page yo where on
 //routes - these have a priority order
+app.get("/register", (req, res) => {
+   let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_registration", templateVars)
+});
+
+
 
 app.post("/logout", (req, res) => {
   //this clears the cookie but does not delete it
