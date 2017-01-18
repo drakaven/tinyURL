@@ -14,6 +14,8 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {};
+
 const generateRandomString = function() {
   let randSource = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   let randString = "";
@@ -32,6 +34,23 @@ app.use(cookieParser());
 
 //pages should redirect back to the page yo where on
 //routes - these have a priority order
+
+app.post("/register", (req, res) => {
+
+  let userID = generateRandomString();
+  if (!req.body.email || !req.body.password) res.redirect(400);
+  for (let userItem in users){
+    console.log(users[userItem].email, req.body.email);
+    if (req.body.email === users[userItem].email) res.redirect(400);
+  }
+  users[userID] = {
+    id : userID,
+    email : req.body.email,
+    password: req.body.password
+  }
+  res.redirect(302, 'http://localhost:8080/urls/');
+});
+
 app.get("/register", (req, res) => {
    let templateVars = {
     username: req.cookies["username"]
