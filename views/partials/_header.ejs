@@ -1,7 +1,13 @@
 <html>
-<h1>Hello Nurse!</h1>
-<form method="POST" action="/urls/login">
-<input type="text" name="Login"></input>
+<% if (!username) { %>
+<form method="POST" action="/login">
+<input type="text" name="username"></input>
 <input type="submit" value="Login">
+<% } else { %>
+<h2>username <%= username %></h2>
+<form method="POST" action="/logout">
+<input type="submit" value="Logout">
+<% } %>
+<h1>Hello Nurse!</h1>
 </form>
 </html>

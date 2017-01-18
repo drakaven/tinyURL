@@ -4,9 +4,11 @@
 </head>
 <body>
     <!-- Add your EJS code here -->
+    <% include partials/_header %>
     <%=  `${shortURL}  ${urls[shortURL]}` %>
     <form method="POST" action=<%= `/urls/${shortURL}/` %>>
     <input type="text" name="update"></input>
-    <input type="submit" value="Update"></input></form>
+    <input type="submit" value="Update"></input>
+    </form>
 </body>
 </html>

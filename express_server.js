@@ -1,4 +1,6 @@
 "use strict"
+//create test
+
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
@@ -32,10 +34,24 @@ app.use(cookieParser());
 
 
 
-//routes - these hava a priority order
+//routes - these have a priority order
 
-app.post("/urls/login/", (req, res) => {
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
+  res.redirect(302, 'http://localhost:8080/urls/');
+});
 
+
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect(302, 'http://localhost:8080/urls/');
+});
+
+app.post("/urls/create/", (req, res) => {
+  let randString = generateRandomString();
+  urlDatabase[randString] = req.body.longURL;
+  //console.log(urlDatabase);
+  res.redirect(302, 'http://localhost:8080/urls/'); // Respond with 'Ok' (we will replace this)
 });
 
 
@@ -56,16 +72,11 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(urlDatabase[req.params.shortURL]);
 });
 
-app.post("/urls/create", (req, res) => {
-  console.log(req.body); // debug statement to see POST parameters
-  let randString = generateRandomString();
-  urlDatabase[randString] = req.body.longURL;
-  console.log(urlDatabase);
-  res.redirect(302, 'http://localhost:8080/urls/' + randString); // Respond with 'Ok' (we will replace this)
-});
-
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -83,7 +94,8 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase
+    urls: urlDatabase,
+    username: req.cookies["username"]
   };
   res.render("urls_index.ejs", templateVars);
 });
@@ -91,7 +103,8 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    urls: urlDatabase
+    urls: urlDatabase,
+    username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });
