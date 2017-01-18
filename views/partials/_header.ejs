@@ -4,9 +4,11 @@
 <a href="/login">Login</a>
 <% } else { %>
 <h2>user<%= username %></h2>
+
 <form method="POST" action="/logout">
 <input type="submit" value="Logout">
 <% } %>
+<a href="urls/new">New</a>
 <br><br>
 
 </form>

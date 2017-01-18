@@ -5,7 +5,9 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+
 
 
 
@@ -51,7 +53,7 @@ app.post("/register", (req, res) => {
   users[userID] = {
     id: userID,
     email: encodeURIComponent(req.body.email),
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password, 10)
   }
   res.redirect(302, 'http://localhost:8080/login');
 });
@@ -83,19 +85,14 @@ app.post("/login", (req, res) => {
   let passed = false
   for (let userItem in users) {
     if (encodeURIComponent(req.body.email) === users[userItem].email) {
-      if (users[userItem].password === req.body.password){
-      passed = true;
-      break;
-        } else { res.send(403, { error: 'Incorrect password' })}
+      if (bcrypt.compareSync(req.body.password, users[userItem].password) === true) {
+      //if (users[userItem].password === req.body.password){
+      res.cookie('username', req.body.email);
+      res.redirect(302, 'http://localhost:8080/urls/')
+        } else { res.redirect(403, { error: 'Incorrect password' })}
     }
-    break;
   };
-  if (passed === true) {
-    res.cookie('username', req.body.email);
-    res.redirect(302, 'http://localhost:8080/urls/')
-  } else {
-    res.send(403, { error :'Username not found' });
-  }
+    res.redirect (403, { error :'Username not found' });
 });
 
 app.post("/urls/create", (req, res) => {
