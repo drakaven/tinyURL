@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser');
+
 
 
 const urlDatabase = {
@@ -24,9 +26,19 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+app.use(cookieParser());
+
+
+
 
 
 //routes - these hava a priority order
+
+app.post("/urls/login/", (req, res) => {
+
+});
+
+
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.update;
   res.redirect(302, 'http://localhost:8080/urls/' + req.params.id); // Respond with 'Ok' (we will replace this)
