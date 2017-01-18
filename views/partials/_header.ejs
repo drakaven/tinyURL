@@ -1,15 +1,13 @@
 <html>
 <% if (!username) { %>
-<form method="POST" action="/login">
-<input type="text" name="username"></input>
-<input type="submit" value="Login">
 <a href="/register">Register</a>
+<a href="/login">Login</a>
 <% } else { %>
 <h2>username <%= username %></h2>
 <form method="POST" action="/logout">
 <input type="submit" value="Logout">
-
 <% } %>
-<h1>Hello Nurse!</h1>
+<br><br>
+
 </form>
 </html>

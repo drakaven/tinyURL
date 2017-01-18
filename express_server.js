@@ -39,20 +39,19 @@ app.post("/register", (req, res) => {
 
   let userID = generateRandomString();
   if (!req.body.email || !req.body.password) res.redirect(400);
-  for (let userItem in users){
-    console.log(users[userItem].email, req.body.email);
+  for (let userItem in users) {
     if (req.body.email === users[userItem].email) res.redirect(400);
   }
   users[userID] = {
-    id : userID,
-    email : req.body.email,
+    id: userID,
+    email: encodeURIComponent(req.body.email),
     password: req.body.password
   }
-  res.redirect(302, 'http://localhost:8080/urls/');
+  res.redirect(302, 'http://localhost:8080/login');
 });
 
 app.get("/register", (req, res) => {
-   let templateVars = {
+  let templateVars = {
     username: req.cookies["username"]
   };
   res.render("urls_registration", templateVars)
@@ -66,11 +65,35 @@ app.post("/logout", (req, res) => {
   res.redirect(302, 'http://localhost:8080/urls/');
 });
 
+app.get("/login", (req, res) => {
+  let templateVars = {
+    shortURL: req.params.id,
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
+  res.render("urls_login", templateVars);
+});
+
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  console.log(req.body);
-  res.redirect(302, 'http://localhost:8080/urls/');
+  //add user changes
+  console.log(req.body.username, users, "here");
+  let passed = false
+  for (let userItem in users) {
+    if (encodeURIComponent(req.body.email) === users[userItem].email) {
+      if (users[userItem].password === req.body.password){
+      passed = true;
+      break;
+        } else { res.send(403, { error: 'Incorrect password' })}
+    }
+    break;
+  };
+  if (passed === true) {
+    res.cookie('username', req.body.email);
+    res.redirect(302, 'http://localhost:8080/urls/')
+  } else {
+    res.send(403, { error :'Username not found' });
+  }
 });
 
 app.post("/urls/create", (req, res) => {
@@ -114,6 +137,7 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     username: req.cookies["username"]
   };
+  console.log(req.headers, templateVars.username)
   res.render("urls_index.ejs", templateVars);
 });
 

@@ -30,16 +30,16 @@ const options = {
   body: 'username=loginTest',
   url: "http://localhost:8080/login/"
 }
-
-request.post(options, function(err, response, body){
-    console.assert(response.headers['set-cookie'][0].substring(0, 18) === 'username=loginTest')
-    console.log("Login passed")
-}).on('end', function(){
-  request.post("http://localhost:8080/logout" , function(err, response, body) {
-    console.assert(response.headers['set-cookie'][0].substring(0, 9) === 'username=')
-    console.log("Logut passed")
-  });
-});
+// // rework
+// request.post(options, function(err, response, body){
+//     console.assert(response.headers['set-cookie'][0].substring(0, 18) === 'username=loginTest')
+//     console.log("Login passed")
+// }).on('end', function(){
+//   request.post("http://localhost:8080/logout" , function(err, response, body) {
+//     console.assert(response.headers['set-cookie'][0].substring(0, 9) === 'username=')
+//     console.log("Logut passed")
+//   });
+// });
 
 // db tests
 const deleteTest = function () {request.post('http://localhost:8080/urls/9sm5xK/delete').on('end' , function(){
