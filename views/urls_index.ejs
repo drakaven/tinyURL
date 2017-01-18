@@ -5,13 +5,17 @@
 </head>
 <body>
 <% include partials/_header %>
-    <!-- Add your EJS code here -->
+    <% for (item in urls) {
+    if (encodeURIComponent(username) === locals.urls[item].user) { %>
 
-    <% for (item in urls) { %>
-    <%= item %>
-    <a href = <%= urls[item] %>><%= urls[item] %></a>
+    <p><%= item %>
+    <a href = <%= locals.urls[item].url %>><%= locals.urls[item].url %></a>
+
     <a href = <%= `/urls/${item}` %> >Edit</a>
-    <form method="POST" action=<%= `/urls/${item}/delete` %>><input type="submit" value="Delete"></input></form>
+    <form method="POST" action=<%= `/urls/${item}/delete` %>>
+    <input type="submit" value="Delete"></input></form>
+    </p>
+    <% } %>
      <% } %>
 
 

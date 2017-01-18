@@ -10,8 +10,8 @@ var cookieParser = require('cookie-parser');
 
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { url: "http://www.lighthouselabs.ca", user: "1%401.1" },
+  "9sm5xK": { url: "http://www.google.com" , user: "yourmom" }
 };
 
 const users = {};
@@ -23,6 +23,12 @@ const generateRandomString = function() {
     randString += randSource[(Math.round(Math.random() * (randSource.length - 1)))];
   }
   return randString
+}
+
+const cookieCheck = function(req, res){
+  console.log(req.cookies);
+  if (typeof(req.cookies["username"]) === 'undefined') {
+  return false; } else { return true; }
 }
 
 app.set("view engine", "ejs");
@@ -67,8 +73,6 @@ app.post("/logout", (req, res) => {
 
 app.get("/login", (req, res) => {
   let templateVars = {
-    shortURL: req.params.id,
-    urls: urlDatabase,
     username: req.cookies["username"]
   };
   res.render("urls_login", templateVars);
@@ -76,8 +80,6 @@ app.get("/login", (req, res) => {
 
 
 app.post("/login", (req, res) => {
-  //add user changes
-  console.log(req.body.username, users, "here");
   let passed = false
   for (let userItem in users) {
     if (encodeURIComponent(req.body.email) === users[userItem].email) {
@@ -97,28 +99,39 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/urls/create", (req, res) => {
+  if (cookieCheck(req,res) === true ){
   let randString = generateRandomString();
-  urlDatabase[randString] = req.body.longURL;
+
+  urlDatabase[randString]  = {url : req.body.longURL, user : encodeURIComponent(req.cookies["username"])};
   //console.log(urlDatabase);
+  }
   res.redirect(302, 'http://localhost:8080/urls/'); // Respond with 'Ok' (we will replace this)
 });
 
 
 app.post("/urls/:id", (req, res) => {
   //if statement resolves bug from posting data to this page with wrong url
-  if (urlDatabase[req.params.id]) urlDatabase[req.params.id] = req.body.update;
-  res.redirect(302, 'http://localhost:8080/urls/' + req.params.id); // Respond with 'Ok' (we will replace this)
+  debugger;
+  if (encodeURIComponent(req.cookies["username"]) === urlDatabase[req.params.id].user){
+  if (urlDatabase[req.params.id])
+      {urlDatabase[req.params.id].url = req.body.update};
+  }
+  res.redirect(302, 'http://localhost:8080/urls/' + req.params.id);
 });
 
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   let key = req.url.replace("/urls/", "").replace("/delete", "");
+
+  if (encodeURIComponent(req.cookies["username"]) === urlDatabase[key].user){
   delete urlDatabase[key];
-  res.redirect(302, 'http://localhost:8080/urls'); // Respond with 'Ok' (we will replace this)
+  }
+  res.redirect(302, 'http://localhost:8080/urls');
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  res.redirect(302, urlDatabase[req.params.shortURL]);
+  console.log(urlDatabase[req.params.shortURL]);
+  res.redirect(302, urlDatabase[req.params.shortURL].url);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -132,12 +145,15 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+app.get("/urls.user", (req, res) => {
+  res.json(users);
+});
+
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     username: req.cookies["username"]
   };
-  console.log(req.headers, templateVars.username)
   res.render("urls_index.ejs", templateVars);
 });
 

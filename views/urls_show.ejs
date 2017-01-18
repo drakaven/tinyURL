@@ -5,7 +5,7 @@
 <body>
     <!-- Add your EJS code here -->
     <% include partials/_header %>
-    <%=  `${shortURL}  ${urls[shortURL]}` %>
+    <%=  `${shortURL}  ${urls[shortURL].url}` %>
     <form method="POST" action=<%= `/urls/${shortURL}/` %>>
     <input type="text" name="update"></input>
     <input type="submit" value="Update"></input>
