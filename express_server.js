@@ -79,15 +79,6 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.post("/urls", (req, res) => {
-  console.log(req.body); // debug statement to see POST parameters
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
-});
-
-app.get("/", (req, res) => {
-  res.end("Hello!");
-});
-
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -108,8 +99,6 @@ app.get("/urls/:id", (req, res) => {
   };
   res.render("urls_show", templateVars);
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
