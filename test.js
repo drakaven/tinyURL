@@ -6,5 +6,6 @@ const options = {
 }
 
 request.post(options, function(err, response, body){
-    console.log(response.statusCode);
+    console.log(response.headers);
 })
+

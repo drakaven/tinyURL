@@ -4,9 +4,9 @@
   <title>TinyApp</title>
 </head>
 <body>
-<% include partials/_header %>
+    <% include partials/_header %>
     <% for (item in urls) {
-    if (encodeURIComponent(username) === locals.urls[item].user) { %>
+    if (typeof(username) !== 'undefined' && encodeURIComponent(username) === locals.urls[item].user) { %>
 
     <p><%= item %>
     <a href = <%= locals.urls[item].url %>><%= locals.urls[item].url %></a>
