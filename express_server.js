@@ -77,6 +77,7 @@ app.post("/register", (req, res) => {
     email: encodeURIComponent(req.body.email),
     password: bcrypt.hashSync(req.body.password, 10)
   }
+  req.session.id = userID;
   res.redirect(302, 'http://localhost:8080/login');
 });
 
