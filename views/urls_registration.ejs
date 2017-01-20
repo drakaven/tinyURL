@@ -4,12 +4,12 @@
   <title>TinyApp</title>
 </head>
 <body>
-
+<% include partials/_header %>
     <!-- Add your EJS code here -->
 <p>Register</p>
 <form method="POST" action="/register">
-<input type="email" name="email">
-<input type="password" name="password">
+<input type="email" name="email" required>
+<input type="password" name="password" required>
 <input type="submit">
 </form>
 

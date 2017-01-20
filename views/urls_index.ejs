@@ -4,17 +4,31 @@
   <title>TinyApp</title>
 </head>
 <body>
+
     <% include partials/_header %>
-    <% for (item in urls) {
-    if (typeof(username) !== 'undefined' && encodeURIComponent(username) === locals.urls[item].user) { %>
+    <div>
+    <button><a href="../urls/new">Create New Short Link</a></button>
+    </div>
+    <%
+    let uniqueID = "";
+    for (item in urls) {
+    if (encodeURIComponent(username) === locals.urls[item].user) {
+    if (unique[item]) { uniqueID=Object.keys(unique[item]).length} else { uniqueID=0};
+    console.log(unique[item]);
+    %>
 
-    <p><%= item %>
+    <div
+    <p><a href=<%= `/u/${item}` %>><%= item %></a>
     <a href = <%= locals.urls[item].url %>><%= locals.urls[item].url %></a>
+    <%= `Visits: ${urls[item].log.length} Unique visits: ${uniqueID}` %>
+    <button><a href = <%= `/urls/${item}` %> >Edit</a></button>
 
-    <a href = <%= `/urls/${item}` %> >Edit</a>
-    <form method="POST" action=<%= `/urls/${item}/delete` %>>
+    <form method="POST" action= <%= `/urls/${item}/?_method=DELETE` %> >
     <input type="submit" value="Delete"></input></form>
+    </form>
     </p>
+    </div>
+
     <% } %>
      <% } %>
 
