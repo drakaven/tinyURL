@@ -187,6 +187,7 @@ app.put("/urls/:id", (req, res) => {
     res.status(403).send("You do not have access to this resource");
   }
   urlDatabase[req.params.id].url = req.body.update;
+  // not sure why this isn't working should redirect to update page
   res.redirect(302, 'http://localhost:8080/urls/' + req.params.id);
 });
 
