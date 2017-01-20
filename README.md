@@ -29,5 +29,6 @@ To install dependencies run:
 
   * /urls:id contains a log of each visit. Visits only update on reload not going back in the browser.
   * you have to make sure you click the actual link on the buttons
+  * use urls with http:// at the start or it doesn't work
   * It is not a good looking site :)
 

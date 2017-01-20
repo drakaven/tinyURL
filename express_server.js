@@ -39,7 +39,8 @@ const uniqueVisitors = {};
 const validateUser = function(req, res) {
   if (!req.session.username) {
     res.status(401).send("You must be logged in to view this page <a href=http://localhost:8080/login>Login</a>");
-    return;
+    //I need to return a return;
+    return false;
   }
 }
 
@@ -55,7 +56,7 @@ const generateRandomString = function() {
 
 app.set("view engine", "ejs");
 //middleware
-app.use(morgan('combined'))
+//app.use(morgan('combined'))
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({
   extended: true
@@ -67,13 +68,17 @@ app.use(cookieSession({
 
 app.post("/register", (req, res) => {
   let userID = generateRandomString();
-  if (!req.body.email || !req.body.password) res.status(400).send("Email address and password required!");
-  return;
+  if (!req.body.email || !req.body.password) {
+    res.status(400).send("Email address and password required!");
+    return;
+  }
   // this doesnt if we have no users
   //check email for duplicate
   for (let userItem in users) {
-    if (encodeURIComponent(req.body.email) === users[userItem].email) res.status(400).send("Email address in use please choose another");
-    return;
+    if (encodeURIComponent(req.body.email) === users[userItem].email) {
+      res.status(400).send("Email address in use please choose another");
+      return;
+    }
   }
   //create user
   users[userID] = {
@@ -97,6 +102,7 @@ app.post("/logout", (req, res) => {
   //this clears the cookie
   req.session = null;
   res.redirect(302, 'http://localhost:8080/');
+  return
 });
 app.get("/login", (req, res) => {
   if (req.session.username) {
@@ -125,10 +131,12 @@ app.post("/login", (req, res) => {
 
 //generate randome string and add to urls DB
 app.post("/urls/create", (req, res) => {
-  validateUser(req, res);
+  if (validateUser(req, res) === false) {
+    return;
+  };
   let randString;
   if (req.session.username) {
-     randString = generateRandomString();
+    randString = generateRandomString();
     urlDatabase[randString] = {
       url: req.body.longURL,
       user: encodeURIComponent(req.session.username),
@@ -141,7 +149,9 @@ app.post("/urls/create", (req, res) => {
 
 //delete link if logged in had belong to you
 app.delete("/urls/:shortURL/", (req, res) => {
-  validateUser(req, res);
+  if (validateUser(req, res) === false) {
+    return;
+  };
   let key = req.url.replace("/urls/", "").replace("/?_method=DELETE", "");
   let encodeName = encodeURIComponent(req.session.username)
   if (encodeName === urlDatabase[key].user) {
@@ -160,7 +170,7 @@ app.get("/u/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   // check if logged in or has temp key
   let id = req.session.username || req.session.tempkey
-  // if no temp ket generat and set one
+    // if no temp ket generat and set one
   if (id === undefined) {
     id = generateRandomString();
     req.session.tempkey = id;
@@ -172,9 +182,9 @@ app.get("/u/:shortURL", (req, res) => {
       time: Date.now()
     });
     //add / update entry to unqiue vistior per url
-    if (uniqueVisitors.hasOwnProperty([req.params.shortURL]))
-    { uniqueVisitors[req.params.shortURL][id] = id}
-    else {
+    if (uniqueVisitors.hasOwnProperty([req.params.shortURL])) {
+      uniqueVisitors[req.params.shortURL][id] = id
+    } else {
       uniqueVisitors[req.params.shortURL] = {};
       uniqueVisitors[req.params.shortURL][id] = id;
     };
@@ -186,7 +196,9 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  validateUser(req, res);
+  if (validateUser(req, res) === false) {
+    return;
+  };
   let templateVars = {
     username: req.session.username
   };
@@ -207,7 +219,9 @@ app.put("/urls/:id", (req, res) => {
     res.status(404).send("Short URL not found");
     return;
   }
-  validateUser(req, res);
+  if (validateUser(req, res) === false) {
+    return;
+  };
   if (encodeURIComponent(req.session.username) !== urlDatabase[req.params.id].user) {
     res.status(403).send("You do not have access to this resource");
     return;
@@ -222,7 +236,9 @@ app.get("/urls/:id", (req, res) => {
     res.status(404).send("Short URL not found");
     return;
   }
-  validateUser(req, res);
+  if (validateUser(req, res) === false) {
+    return;
+  };
 
   if (encodeURIComponent(req.session.username) !== urlDatabase[req.params.id].user) {
     res.status(403).send("You do not have access to this resource");
@@ -230,19 +246,23 @@ app.get("/urls/:id", (req, res) => {
   }
   //check unique visitor for url entry and send to page it exists
   let uniqueCount = 0;
-  if (uniqueVisitors.hasOwnProperty(req.params.id)) {uniqueCount = Object.keys(uniqueVisitors[req.params.id]).length}
+  if (uniqueVisitors.hasOwnProperty(req.params.id)) {
+    uniqueCount = Object.keys(uniqueVisitors[req.params.id]).length
+  }
   let templateVars = {
     url: urlDatabase[req.params.id],
     username: req.session.username,
     unique: uniqueCount,
-    shortURL : req.params.id
+    shortURL: req.params.id
   };
   res.render("urls_show", templateVars);
 });
 
 //get users' urls
 app.get("/urls", (req, res) => {
-  validateUser(req, res);
+  if (validateUser(req, res) === false) {
+    return;
+  };
   let templateVars = {
     urls: urlDatabase,
     username: req.session.username,
