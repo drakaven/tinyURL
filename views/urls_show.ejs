@@ -5,10 +5,25 @@
 <body>
     <!-- Add your EJS code here -->
     <% include partials/_header %>
-    <%=  `${shortURL}  ${urls[shortURL]}` %>
-    <form method="POST" action=<%= `/urls/${shortURL}/` %>>
+
+    <%=  `${shortURL}  ${url.url} Visits: ${url.log.length} Unique visits: ${unique}` %>
+    <form method="POST" action=<%= `/urls/${shortURL}/?_method=PUT` %>>
     <input type="text" name="update"></input>
     <input type="submit" value="Update"></input>
     </form>
+
+
+
+    <form method="POST" action=<%= `/urls/${shortURL}/?_method=DELETE` %>>
+    <input type="submit" value="Delete"></input></form>
+    </form>
+
+    <%  url.log.forEach((item) => {
+    let date = new Date( item.time ).toString();
+
+    %>
+    <%=  `${item.id} ${date}`   %>
+    <br>
+    <% }); %>
 </body>
 </html>
