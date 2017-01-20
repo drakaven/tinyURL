@@ -1,4 +1,8 @@
 "use strict"
+//add returns to fix header set error
+
+
+
 //create test
 const express = require("express");
 const app = express();
@@ -51,7 +55,7 @@ const generateRandomString = function() {
 
 app.set("view engine", "ejs");
 //middleware
-
+app.use(morgan('combined'))
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({
   extended: true
@@ -102,6 +106,7 @@ app.post("/login", (req, res) => {
       if (bcrypt.compareSync(req.body.password, users[userItem].password) === true) {
         req.session.username = req.body.email;
         res.redirect(302, 'http://localhost:8080/urls/');
+        return;
       } else {
         res.status(401).send("Password Incorrect");
       }
@@ -112,15 +117,16 @@ app.post("/login", (req, res) => {
 
 app.post("/urls/create", (req, res) => {
   validateUser(req, res);
+  let randString;
   if (req.session.username) {
-    let randString = generateRandomString();
+     randString = generateRandomString();
     urlDatabase[randString] = {
       url: req.body.longURL,
       user: encodeURIComponent(req.session.username),
       log: []
     };
   }
-  res.redirect(302, 'http://localhost:8080/urls/');
+  res.redirect(302, 'http://localhost:8080/urls/' + randString);
 });
 
 
@@ -177,17 +183,16 @@ app.get("/urls.user", (req, res) => {
   res.json(users);
 });
 
-
+//?
 app.put("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     res.status(404).send("Short URL not found");
   }
   validateUser(req, res);
-  if (!encodeURIComponent(req.session.username) === urlDatabase[req.params.id].user) {
+  if (encodeURIComponent(req.session.username) !== urlDatabase[req.params.id].user) {
     res.status(403).send("You do not have access to this resource");
   }
   urlDatabase[req.params.id].url = req.body.update;
-  // not sure why this isn't working should redirect to update page
   res.redirect(302, 'http://localhost:8080/urls/' + req.params.id);
 });
 
@@ -197,7 +202,7 @@ app.get("/urls/:id", (req, res) => {
   }
   validateUser(req, res);
 
-  if (!encodeURIComponent(req.session.username) === urlDatabase[req.params.id].user) {
+  if (encodeURIComponent(req.session.username) !== urlDatabase[req.params.id].user) {
     res.status(403).send("You do not have access to this resource");
   }
   let uniqueCount = 0;
@@ -224,6 +229,7 @@ app.get("/urls", (req, res) => {
 app.get("/", (req, res) => {
   if (req.session.username) {
     res.redirect(302, 'http://localhost:8080/urls');
+    return;
   }
   res.redirect(302, 'http://localhost:8080/login');
 });

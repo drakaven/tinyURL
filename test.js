@@ -2,10 +2,11 @@
 const request = require("request");
 
 const options = {
-  url: "http://localhost:8080/register"
+  url: "http://localhost:8080/urls/b2xVn2"
 }
 
-request.post(options, function(err, response, body){
-    console.log(response.headers, response.statusCode, response.body);
+request.put(options, function(err, response, body){
+    console.log(response.statusCode, body
+      );
 })
 
